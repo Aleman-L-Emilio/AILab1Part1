@@ -1,5 +1,5 @@
 # Lab 1, Part 1b: Problem Representation.
-# Name(s): 
+# Name(s): Emilio L. Aleman, Vartan Yildiz
 
 from __future__ import annotations
 from typing import Optional, Any, Hashable, Sequence, Iterable, Dict, Union, List, Tuple, cast
