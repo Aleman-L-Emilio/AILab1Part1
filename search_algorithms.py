@@ -112,7 +112,7 @@ class TreeSearchAlgorithm(GoalSearchAgent):
         """
         self.enqueue(initial_state, cutoff)
 
-        while self.frontier:
+        while self.frontier is not None:
             state = self.dequeue()
 
             if state.is_goal_state():
@@ -152,15 +152,11 @@ class DepthFirstSearch(GoalSearchAgent):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
         if state.depth < cutoff:
             self.frontier.append(state)
-
-        raise NotImplementedError
   
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the MOST RECENTLY ADDED state from the frontier."""
 
         return self.frontier.pop()
-
-        raise NotImplementedError
 
 class BreadthFirstSearch(GoalSearchAgent):
     """ Partial class representing the Breadth First Search strategy.
@@ -183,15 +179,10 @@ class BreadthFirstSearch(GoalSearchAgent):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
         if state.depth < cutoff:
             self.frontier.append(state)
-        raise NotImplementedError
-
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the LEAST RECENTLY ADDED state from the frontier."""
         return self.frontier.pop(0)
-        raise NotImplementedError
-
-
 
 class UniformCostSearch(GoalSearchAgent):
     """ Partial class representing the Uniform Cost Search strategy.
@@ -221,15 +212,11 @@ class UniformCostSearch(GoalSearchAgent):
         if state.path_cost < cutoff:
             heapq.heappush(self.frontier,(state.path_cost,state))
 
-        raise NotImplementedError
-
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the state with LOWEST PATH COST from the frontier."""
         popped = heapq.heappop(self.frontier) 
         return popped[1]
-        raise NotImplementedError
-
 
 class GraphSearchAlgorithm(GoalSearchAgent):
     """
@@ -258,9 +245,31 @@ class GraphSearchAlgorithm(GoalSearchAgent):
         """
         ext_filter : Set[StateNode] = set() # Create an empty extended state filter
 
-        #TODO implement! (You may start by copying your TreeSearch's code)
+        #Initial State
+        self.enqueue(initial_state, cutoff) 
+ 
+        while self.frontier is not None: 
+            state = self.dequeue()
+ 
+            if state not in ext_filter:
+                if state.is_goal_state(): 
+                    return state
+ 
+                for newState in state.get_all_actions():
+                    if gui_callback_fn(state):
+                        break
+                           
+                    newState = state.get_next_state(action=newState)
+ 
+                    if newState != state.parent and newState != ext_filter:
+                        self.enqueue(newState,cutoff)
+                        self.total_enqueues = self.total_enqueues + 1
+                        ext_filter.add(state)
+ 
+            self.total_extends = self.total_extends + 1
         return None
 
+#END OF PART 1
 
 
 #### Lab 1, Part 2b: Informed Search #################################################
