@@ -1,5 +1,5 @@
 # Lab 1 (Part 1a and 2a)
-# Name(s): Emilio L. Aleman, Vartan Yildiz
+# Name(s): Emilio L. Aleman and Vartan Yildiz
 
 from __future__ import annotations
 from typing import List, Collection, Tuple, Callable, Optional, Union, Set, Dict, Type, Iterable
@@ -110,8 +110,26 @@ class TreeSearchAlgorithm(GoalSearchAgent):
 
         Remember that "tree search" may re-enqueue or re-extend the same state, multiple times.
         """
+        self.enqueue(initial_state, cutoff)
 
-        #TODO implement!
+        while self.frontier is not None:
+            state = self.dequeue()
+
+            if state.is_goal_state():
+                return state
+
+            for newState in state.get_all_actions():
+                if gui_callback_fn(state):
+                    break
+
+                newState = state.get_next_state(action=newState)
+ 
+                if newState != state.parent: 
+                    self.enqueue(newState,cutoff)
+                    self.total_enqueues = self.total_enqueues + 1
+ 
+            self.total_extends+=1
+
         return None
 
 
