@@ -112,7 +112,7 @@ class TreeSearchAlgorithm(GoalSearchAgent):
         """
         self.enqueue(initial_state, cutoff)
 
-        while self.frontier is not None:
+        while self.frontier:
             state = self.dequeue()
 
             if state.is_goal_state():
@@ -128,7 +128,7 @@ class TreeSearchAlgorithm(GoalSearchAgent):
                     self.enqueue(newState,cutoff)
                     self.total_enqueues = self.total_enqueues + 1
  
-            self.total_extends+=1
+            self.total_extends = self.total_extends + 1
 
         return None
 
@@ -146,18 +146,20 @@ class DepthFirstSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        # TODO initiate frontier data structure
+        self.frontier = []
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
-        # TODO 
+        if state.depth < cutoff:
+            self.frontier.append(state)
+
         raise NotImplementedError
-
-
-        
+  
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the MOST RECENTLY ADDED state from the frontier."""
-        # TODO 
+
+        return self.frontier.pop()
+
         raise NotImplementedError
 
 class BreadthFirstSearch(GoalSearchAgent):
@@ -175,17 +177,18 @@ class BreadthFirstSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        # TODO initiate frontier data structure
-        
+        self.frontier = []
+
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
-        # TODO 
+        if state.depth < cutoff:
+            self.frontier.append(state)
         raise NotImplementedError
 
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the LEAST RECENTLY ADDED state from the frontier."""
-        # TODO 
+        return self.frontier.pop(0)
         raise NotImplementedError
 
 
@@ -210,19 +213,21 @@ class UniformCostSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        # TODO initiate frontier data structure
-
-
+        self.frontier = []
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
-        # TODO 
+
+        if state.path_cost < cutoff:
+            heapq.heappush(self.frontier,(state.path_cost,state))
+
         raise NotImplementedError
 
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the state with LOWEST PATH COST from the frontier."""
-        # TODO 
+        popped = heapq.heappop(self.frontier) 
+        return popped[1]
         raise NotImplementedError
 
 
