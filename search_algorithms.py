@@ -1,5 +1,5 @@
 # Lab 1 (Part 1a and 2a)
-# Name(s): Emilio L. Aleman, Vartan Yildiz
+# Name(s): Emilio L. Aleman and Vartan Yildiz
 
 from __future__ import annotations
 from typing import List, Collection, Tuple, Callable, Optional, Union, Set, Dict, Type, Iterable
@@ -110,8 +110,26 @@ class TreeSearchAlgorithm(GoalSearchAgent):
 
         Remember that "tree search" may re-enqueue or re-extend the same state, multiple times.
         """
+        self.enqueue(initial_state, cutoff)
 
-        #TODO implement!
+        while self.frontier is not None:
+            state = self.dequeue()
+
+            if state.is_goal_state():
+                return state
+
+            for newState in state.get_all_actions():
+                if gui_callback_fn(state):
+                    break
+
+                newState = state.get_next_state(action=newState)
+ 
+                if newState != state.parent: 
+                    self.enqueue(newState,cutoff)
+                    self.total_enqueues = self.total_enqueues + 1
+ 
+            self.total_extends = self.total_extends + 1
+
         return None
 
 
@@ -128,19 +146,17 @@ class DepthFirstSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        # TODO initiate frontier data structure
+        self.frontier = []
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
-        # TODO 
-        raise NotImplementedError
-
-
-        
+        if state.depth < cutoff:
+            self.frontier.append(state)
+  
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the MOST RECENTLY ADDED state from the frontier."""
-        # TODO 
-        raise NotImplementedError
+
+        return self.frontier.pop()
 
 class BreadthFirstSearch(GoalSearchAgent):
     """ Partial class representing the Breadth First Search strategy.
@@ -157,20 +173,16 @@ class BreadthFirstSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        # TODO initiate frontier data structure
-        
+        self.frontier = []
+
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
-        # TODO 
-        raise NotImplementedError
-
+        if state.depth < cutoff:
+            self.frontier.append(state)
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the LEAST RECENTLY ADDED state from the frontier."""
-        # TODO 
-        raise NotImplementedError
-
-
+        return self.frontier.pop(0)
 
 class UniformCostSearch(GoalSearchAgent):
     """ Partial class representing the Uniform Cost Search strategy.
@@ -192,21 +204,19 @@ class UniformCostSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        # TODO initiate frontier data structure
-
-
+        self.frontier = []
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
-        # TODO 
-        raise NotImplementedError
+
+        if state.path_cost < cutoff:
+            heapq.heappush(self.frontier,(state.path_cost,state))
 
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the state with LOWEST PATH COST from the frontier."""
-        # TODO 
-        raise NotImplementedError
-
+        popped = heapq.heappop(self.frontier) 
+        return popped[1]
 
 class GraphSearchAlgorithm(GoalSearchAgent):
     """
@@ -235,9 +245,31 @@ class GraphSearchAlgorithm(GoalSearchAgent):
         """
         ext_filter : Set[StateNode] = set() # Create an empty extended state filter
 
-        #TODO implement! (You may start by copying your TreeSearch's code)
+        #Initial State
+        self.enqueue(initial_state, cutoff) 
+ 
+        while self.frontier is not None: 
+            state = self.dequeue()
+ 
+            if state not in ext_filter:
+                if state.is_goal_state(): 
+                    return state
+ 
+                for newState in state.get_all_actions():
+                    if gui_callback_fn(state):
+                        break
+                           
+                    newState = state.get_next_state(action=newState)
+ 
+                    if newState != state.parent and newState != ext_filter:
+                        self.enqueue(newState,cutoff)
+                        self.total_enqueues = self.total_enqueues + 1
+                        ext_filter.add(state)
+ 
+            self.total_extends = self.total_extends + 1
         return None
 
+#END OF PART 1
 
 
 #### Lab 1, Part 2b: Informed Search #################################################
