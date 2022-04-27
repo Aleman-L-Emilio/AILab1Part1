@@ -112,7 +112,7 @@ class TreeSearchAlgorithm(GoalSearchAgent):
         """
         self.enqueue(initial_state, cutoff)
 
-        while self.frontier is not None:
+        while self.frontier is not None: # while self.frontier is True:
             state = self.dequeue()
 
             if state.is_goal_state():
@@ -120,12 +120,12 @@ class TreeSearchAlgorithm(GoalSearchAgent):
 
             for newState in state.get_all_actions():
                 if gui_callback_fn(state):
-                    break
+                    break # if the user stops the search early, end the search
 
-                newState = state.get_next_state(action=newState)
+                newState = state.get_next_state(newState)
  
                 if newState != state.parent: 
-                    self.enqueue(newState,cutoff)
+                    self.enqueue(newState, cutoff)
                     self.total_enqueues = self.total_enqueues + 1
  
             self.total_extends = self.total_extends + 1
@@ -151,12 +151,11 @@ class DepthFirstSearch(GoalSearchAgent):
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
         if state.depth < cutoff:
-            self.frontier.append(state)
+            self.frontier.append(state)  # type: ignore
   
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the MOST RECENTLY ADDED state from the frontier."""
-
-        return self.frontier.pop()
+        return self.frontier.pop()  # type: ignore
 
 class BreadthFirstSearch(GoalSearchAgent):
     """ Partial class representing the Breadth First Search strategy.
@@ -173,16 +172,16 @@ class BreadthFirstSearch(GoalSearchAgent):
         Create an empty frontier queue.
         """
         super().__init__(*args, **kwargs)
-        self.frontier = []
+        self.frontier = deque()
 
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless depth exceeds the cutoff """
         if state.depth < cutoff:
-            self.frontier.append(state)
+            self.frontier.append(state)  # type: ignore
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the LEAST RECENTLY ADDED state from the frontier."""
-        return self.frontier.pop(0)
+        return self.frontier.popleft()  # type: ignore
 
 class UniformCostSearch(GoalSearchAgent):
     """ Partial class representing the Uniform Cost Search strategy.
@@ -248,7 +247,7 @@ class GraphSearchAlgorithm(GoalSearchAgent):
         #Initial State
         self.enqueue(initial_state, cutoff) 
  
-        while self.frontier is not None: 
+        while self.frontier is not None: # while self.frontier = True:
             state = self.dequeue()
  
             if state not in ext_filter:
@@ -257,7 +256,7 @@ class GraphSearchAlgorithm(GoalSearchAgent):
  
                 for newState in state.get_all_actions():
                     if gui_callback_fn(state):
-                        break
+                        break # if user stops search early, end the search
                            
                     newState = state.get_next_state(action=newState)
  
@@ -267,6 +266,7 @@ class GraphSearchAlgorithm(GoalSearchAgent):
                         ext_filter.add(state)
  
             self.total_extends = self.total_extends + 1
+            
         return None
 
 #END OF PART 1

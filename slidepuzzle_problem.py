@@ -70,19 +70,18 @@ class SlidePuzzleState(StateNode):
             # read file and return an initial SlidePuzzleState.
             # This return statement is just a dummy.
 
-            filesize= int(file.readline().strip())
-            tiles = tuple( tuple(int(val) for val in file.readline().split()) for r in range(filesize))
-            empty_pos=Coordinate(0,0)
-            x=0
+            filesize = int(file.readline().strip())
+            tiles = tuple(tuple(int(val) for val in file.readline().split()) for r in range(filesize))
+            empty_pos = Coordinate(0,0)
+            x = 0
+
             for row in tiles:
-                y=0
+                y = 0
                 for col in row:
-
-                    if(col==0):
-
-                        empty_pos=Coordinate(x,y)
-                    y+=1
-                x+=1
+                    if (col == 0):
+                        empty_pos = Coordinate(x,y)
+                    y += 1
+                x += 1
             
             return SlidePuzzleState( 
                 tiles = tiles, 
@@ -163,12 +162,12 @@ class SlidePuzzleState(StateNode):
         The goal of the slide puzzle is to have the empty spot in the 0th row and 0th col,
         and then the rest of the numbered tiles in order down the rows!
         """
-        num=0
+        num = 0
         for row in self.tiles:
             for col in row:
-                if(col!=num):
+                if (col != num):
                     return False
-                num+=1
+                num += 1
         return True
     
     # Override
@@ -182,17 +181,18 @@ class SlidePuzzleState(StateNode):
         is to be moved into the empty slot. That Coordinate needs to be not out of bounds, and 
         actually adjacent to the emty slot.
         """
-        is_legal=False
+        isLegal = False
 
-        if(action.row >= len(self.tiles) or action.col >= len(self.tiles)):
+        if (action.row >= len(self.tiles) or action.col >= len(self.tiles)):
             return False
-        movableTiles=self.find_surrounding_tiles(action)
+        
+        movableTiles = self.find_surrounding_tiles(action)
 
         for movable in movableTiles:
-            if (movable==self.empty_pos):
-                is_legal=True
+            if (movable == self.empty_pos):
+                isLegal = True
         
-        return is_legal
+        return isLegal
     
 
     # Override
@@ -200,7 +200,7 @@ class SlidePuzzleState(StateNode):
         """Return all legal actions at this state."""
         # implement! This is a good candidate for using yield (generator function)
         # alternatively, return a list, tuple, or use comprehension
-        return self.find_surrounding_tiles(self.empty_pos)
+        return self.find_surrounding_tiles(self.empty_pos)  # type: ignore
         
 
     # Override
@@ -224,24 +224,25 @@ class SlidePuzzleState(StateNode):
         -- action is assumed legal (is_legal_action called before), but a ValueError may be passed for illegal actions if desired.
         """
         #implement! Remember that this returns a NEW state, and doesn't change this one.
-        newtiles=list(self.tiles)
-        i=0
-        for x in newtiles:
-            newtiles[i]=list(x)
-            i+=1
+        newtiles = list(self.tiles)
+        i = 0
 
-        newtiles[self.empty_pos.row][self.empty_pos.col]=newtiles[action.row][action.col]
-        newtiles[action.row][action.col]=0
-
-        i=0
         for x in newtiles:
-            newtiles[i]=tuple(x)
-            i+=1
-        newtiles=tuple(newtiles)
+            newtiles[i] = list(x)  # type: ignore
+            i += 1
+
+        newtiles[self.empty_pos.row][self.empty_pos.col] = newtiles[action.row][action.col]  # type: ignore
+        newtiles[action.row][action.col] = 0  # type: ignore
+
+        i = 0
+        for x in newtiles:
+            newtiles[i] = tuple(x)
+            i += 1
+        newtiles = tuple(newtiles)
 
         return SlidePuzzleState( 
                 tiles = newtiles, 
-                empty_pos =action,
+                empty_pos = action,
                 parent = self,
                 last_action = action,
                 depth = self.depth +1,
@@ -251,18 +252,18 @@ class SlidePuzzleState(StateNode):
         return self
 
     def find_surrounding_tiles(self, location:Coordinate) -> Iterable[Coordinate]:
-        tiles=[]
+        tiles = []
 
-        if(location.row!=0):
-            tiles.append(Coordinate(location.row-1,location.col))
+        if (location.row != 0):
+            tiles.append(Coordinate(location.row-1, location.col))
 
-        if(location.row!=len(self.tiles)-1):
-            tiles.append(Coordinate(location.row+1,location.col))
+        if (location.row != len(self.tiles)-1):
+            tiles.append(Coordinate(location.row+1, location.col))
 
-        if(location.col!=0):
-            tiles.append(Coordinate(location.row,location.col-1))
+        if (location.col != 0):
+            tiles.append(Coordinate(location.row, location.col-1))
 
-        if(location.col!=len(self.tiles)-1):
-            tiles.append(Coordinate(location.row,location.col+1))
+        if (location.col != len(self.tiles)-1):
+            tiles.append(Coordinate(location.row, location.col+1))
 
         return tiles
