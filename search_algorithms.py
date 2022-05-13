@@ -308,20 +308,22 @@ class GreedyBestSearch(InformedSearchAgent):
         of the remaining cost to goal. 
         """
         super().__init__(heuristic)
-        # TODO initiate frontier data structure
-
+        self.total_enqueues = 0
+        self.total_extend = 0
+        self.frontier = []
 
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
-        # TODO 
-        raise NotImplementedError
+        if state.path_cost < cutoff:
+            self.frontier.append(state)
 
         
     def dequeue(self) -> Tuple[float, StateNode]:
         """  Choose and remove the state with LOWEST ESTIMATED REMAINING COST TO GOAL from the frontier."""
-        # TODO 
-        raise NotImplementedError
+        sorted_frontier = sorted(self.frontier, key = self.heuristic)
+        self.frontier.remove(sorted_frontier[0])
+        return sorted_frontier[0]
 
 
 class AStarSearch(InformedSearchAgent):
@@ -340,21 +342,21 @@ class AStarSearch(InformedSearchAgent):
         of remaining path cost. 
         """
         super().__init__(heuristic, *args, **kwargs)
-        # TODO initiate frontier data structure
-
-
+        self.total_extends = 0
+        self.total_enqueues = 0
+        self.frontier = []
         
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
-       # TODO 
-        raise NotImplementedError
-
+        if state.path_cost < cutoff:
+            heapq.heappush(self.frontier, (state.path_cost + self.heuristic(state), state))
 
         
     def dequeue(self) -> StateNode:
         """  Choose, remove, and return the state with LOWEST ESTIMATED TOTAL PATH COST from the frontier."""
-        # TODO 
-        raise NotImplementedError
+        popped_arr = heapq.heappop(self.frontier)
+        #Make to use 1 because it is priority queue
+        return popped_arr[1]
 
 
 
