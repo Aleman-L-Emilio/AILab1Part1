@@ -392,8 +392,36 @@ class AnytimeSearchAlgorithm(InformedSearchAgent):
         it should always return the lowest-cost StateNode path  to the state closest* to the solution found so far.
         *Closest according to the agent's heuristic.
         """
-        #TODO implement! (You may start by copying your GraphSearch's code)
-        return None
+        ext_filter : Set[StateNode] = set() # Create an empty extended state filter
+        return_node = None
+        return_heuristic = INF
+        return_cost = INF
+
+        #Initial State
+        self.enqueue(initial_state, cutoff) 
+        self.total_enqueues += 1
+        
+        while self.frontier is not None: # while self.frontier = True:
+            state = self.dequeue()
+ 
+            if state not in ext_filter:
+                if state.is_goal_state(): 
+                    return state
+ 
+                if (self.heuristic(state) < return_heuristic) or (state.path_cost < return_cost and self.heuristic(state) == return_heuristic):
+                    return_heuristic = self.heuristic(state)
+                    return_cost = state.path_cost
+                    return_node = state
+                for action in state.get_all_actions():
+                    if gui_callback_fn(state):
+                        return return_node
+                    if state.get_next_state(action) != state.parent:
+                        self.enqueue(state.get_next_state(action), cutoff)
+                        self.total_enqueues += 1
+                self.total_extends += 1
+                ext_filter.add(state)
+            
+        return return_node
 
 
 
