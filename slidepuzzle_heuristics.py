@@ -1,5 +1,6 @@
 # Lab 1, Part 2a: Heuristics.
-# Name(s): 
+# Name(s): Emilio L. Aleman and Vartan Yildiz
+
 from search_heuristics import *
 from slidepuzzle_problem import *
 

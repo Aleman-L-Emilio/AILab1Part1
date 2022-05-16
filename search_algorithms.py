@@ -316,12 +316,12 @@ class GreedyBestSearch(InformedSearchAgent):
     def enqueue(self, state: StateNode, cutoff: Union[int, float] = INF):
         """ Add the state to the frontier, unless path COST exceeds the cutoff """
         if state.path_cost < cutoff:
-            self.frontier.append(state)
+            self.frontier.append(state)  # type: ignore
 
         
     def dequeue(self) -> Tuple[float, StateNode]:
         """  Choose and remove the state with LOWEST ESTIMATED REMAINING COST TO GOAL from the frontier."""
-        sorted_frontier = sorted(self.frontier, key = self.heuristic)
+        sorted_frontier = sorted(self.frontier, key = self.heuristic)  # type: ignore
         self.frontier.remove(sorted_frontier[0])
         return sorted_frontier[0]
 
